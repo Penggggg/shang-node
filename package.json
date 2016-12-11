@@ -4,7 +4,8 @@
   "description": "商 —— 后台node应用",
   "main": "index.js",
   "scripts": {
-    "start": "tsc -w"
+    "start": "tsc -w",
+    "push:daily": "gulp push_daily"
   },
   "repository": {
     "type": "git",
