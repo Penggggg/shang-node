@@ -51,18 +51,27 @@ export class _Http implements IHttp {
                         console.log(`http inner middlewares part A Error: middleware - ${index}: ${e}`)
                     }
                 })
-               // step 3: 跑一遍当前path的handler
-               try { 
-                    this.innerMiddlewares[ req.url ].handler( req, res );
-               } catch ( e ) { console.log(`http handler Error!`) }
-               // step 4: 跑一遍当前path的中间件的 b part
-               this.innerMiddlewares[ req.url ][ req.method ].forEach(( middlewareItem, index ) => {
-                    try {
-                        if ( middlewareItem[ 1 ] !== null ) {middlewareItem[ 1 ]( req, res );}
-                    } catch ( e ) {
-                        console.log(`http inner middlewares part A Error: middleware - ${index}: ${e}`)
-                    }
-               })                
+                let innerAsync = async ( ) => {
+                    // step 3: 跑一遍当前path的handler
+                    try { 
+                        await this.innerMiddlewares[ req.url ].handler( req, res );
+                    } catch ( e ) { console.log(`http handler Error!`) }
+                }
+                let outterAsync = async ( ) => {
+                    await innerAsync( );
+                    // step 4: 跑一遍当前path的中间件的 b part
+                    this.innerMiddlewares[ req.url ][ req.method ].forEach(( middlewareItem, index ) => {
+                            try {
+                                if ( middlewareItem[ 1 ] !== null ) {middlewareItem[ 1 ]( req, res );}
+                            } catch ( e ) {
+                                console.log(`http inner middlewares part A Error: middleware - ${index}: ${e}`)
+                            }
+                    }) 
+                }
+                outterAsync( );
+
+                
+
 
 
             })
@@ -111,17 +120,7 @@ export class _Http implements IHttp {
      */
     get( path: string, handler, middlewares?: Array<any> ) {
         // 参数检查
-        if ( typeof path !== 'string' || typeof handler !== 'function' ){ console.log(`http.get Error: argument type error`); return }
-        let middleTypeError = middlewares.some(( middlewareItem ) => {
-            if ( !( typeof middlewareItem === 'function' || ( middlewareItem instanceof Array ))){ return true;}
-            if ( middlewareItem instanceof Array ) { 
-                if ( middlewareItem.length > 2 ) { return true; }
-                return middlewareItem.some(( innerFuc ) => {
-                    if ( typeof innerFuc !== 'function' ) { return true;}
-                }
-            )}
-        })
-        if ( middleTypeError ) { console.log(`http.get argument type error: middlewares`); return }
+        if ( this.checkArgError( path, handler, middlewares )) { console.log(`http.get argument type error`); return }
         
         // 把middewares和handler注入到path-GET
         let _current: IPath = this.innerMiddlewares[ path ] = {
@@ -139,13 +138,35 @@ export class _Http implements IHttp {
     }
 
 
+
     /**
      * delete 方法
      */
     delete( ) { }
+
+
+
     /**
      * put 方法 
      */
     put( ) { }
+
+
+    /**
+     * 参数检查
+     */
+    private checkArgError( path: string, handler, middlewares?: Array<any> ): boolean {
+        // 参数检查
+        if ( typeof path !== 'string' || typeof handler !== 'function' ){ console.log(`http.get Error: argument type error`); return true; }
+        return middlewares.some(( middlewareItem ) => {
+            if ( !( typeof middlewareItem === 'function' || ( middlewareItem instanceof Array ))){ return true;}
+            if ( middlewareItem instanceof Array ) { 
+                if ( middlewareItem.length > 2 ) { return true; }
+                return middlewareItem.some(( innerFuc ) => {
+                    if ( typeof innerFuc !== 'function' ) { return true;}
+                }
+            )}
+        })
+    }
 
 } 

@@ -27,6 +27,39 @@ var c = ( req, res ) => {
     console.log(`total: ${result}`)
 }
 
-server.get('/',( req, res )=>{
+server.get('/', async ( req, res )=>{
+    var a =  test( );
     console.log('i am / handler')
 }, [ a, [ b, c ]])
+
+function test( ) {
+    return new Promise((resolve, reject) =>{
+        setTimeout(( ) => {
+            resolve( );
+            console.log(`resolve`)
+        }, 2000 )
+    })
+}
+
+
+// var outAsyc = async ( ) => {
+//     await innerAync( );
+//     console.log(`outAsyc Done`)
+// }
+
+// var innerAync = async ( ) => {
+//     await innerAwait( );
+//     console.log(`innerAync Done`)
+// }
+
+// var innerAwait = ( ) => {
+//     return new Promise(( resolve, reject ) => {
+//         setTimeout(( ) => {
+//             console.log(`innerAwait Done`);
+//             resolve( );
+//         }, 2000)
+//     })
+// }
+
+// outAsyc( );
+

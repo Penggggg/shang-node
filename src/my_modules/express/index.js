@@ -1,50 +1,47 @@
 "use strict";
-var http_1 = require('./_http/http');
-var express;
+const http_1 = require("./_http/http");
+let express;
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.default = express = function () {
+exports.default = express = () => {
     return new App();
 };
-var App = (function () {
-    function App() {
-    }
+class App {
+    constructor() { }
     /**
      * 返回一个http/https/net/dgram服务器
      */
-    App.prototype.listen = function (_a) {
-        var port = _a.port, _b = _a.domain, domain = _b === void 0 ? '127.0.0.1' : _b, _c = _a.type, type = _c === void 0 ? 'http' : _c;
+    listen({ port, domain = '127.0.0.1', type = 'http' }) {
         switch (type) {
             // 返回一个_Http实例
             case 'http': {
-                var _http = new http_1._Http();
+                let _http = new http_1._Http();
                 _http.createServer(port, domain);
                 return _http;
             }
             default: {
-                console.log("app.listen argument 'type' Error");
+                console.log(`app.listen argument 'type' Error`);
                 break;
             }
         }
-    };
+    }
     /**
     * 使用一个全局中间件
     */
-    App.prototype.use = function () { };
+    use() { }
     /**
      * 使用一个全局配置
     */
-    App.prototype.set = function () { };
+    set() { }
     /**
      * 获取一个全局配置的信息
     */
-    App.prototype.get = function () { };
+    get() { }
     /**
      * 禁用某个全局配置
     */
-    App.prototype.disable = function () { };
+    disable() { }
     /**
      * 开启某个全局配置
      */
-    App.prototype.enable = function () { };
-    return App;
-}());
+    enable() { }
+}
