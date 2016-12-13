@@ -47,4 +47,15 @@ var c = ( req, res ) => {
     let result = date.getTime() - req.timeStart;
 }
 
+> My Express —— HTTP/TCP request params parse
+
+server.get('/home/cat/:sex/:id', async ( req, res ) => {
+    console.log( 'hi' )
+})
+
+
+server.get('/home/cat/:sex', async ( req, res ) => {
+    console.log( 'hi' )
+})
+
 #### 

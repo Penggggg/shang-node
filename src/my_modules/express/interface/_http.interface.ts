@@ -21,5 +21,6 @@ export interface IPath {
     POST?: Array< Array<Function>>
     DELETE?: Array< Array<Function>>
     PUT?: Array< Array<Function>>
+    Params?: Array< string >
     handler: Function
 }

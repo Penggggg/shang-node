@@ -14,4 +14,6 @@
         "**/*.mock.js": true,
         "**/*.directive.js": true
     }
+,
+"typescript.tsdk": "./node_modules/typescript/lib"
 }

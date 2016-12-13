@@ -6,60 +6,36 @@ var server = app.listen({ port: 3000 })
 console.log('creating server...');
 
 
-server.use(( req, res ) => {
-    console.log(`i am global a part`);
+
+server.get('/home/cat/:sex/:id', async ( req, res ) => {
+    console.log( 'res: /' )
 })
 
-var a = ( req, res ) => {
-    console.log(`i am inner / part A`)
-}
-
-var b = ( req, res ) => {
-    let date = new Date();
-    console.log(`i am inner / part A ${date.getTime()}`)
-    req.timeStart = date.getTime( );
-}
-
-var c = ( req, res ) => {
-    let date = new Date();
-    let result = date.getTime() - req.timeStart;
-    console.log(`i am inner / part B ${date.getTime()}`)
-    console.log(`total: ${result}`)
-}
-
-server.get('/', async ( req, res )=>{
-    var a =  test( );
-    console.log('i am / handler')
-}, [ a, [ b, c ]])
-
-function test( ) {
-    return new Promise((resolve, reject) =>{
-        setTimeout(( ) => {
-            resolve( );
-            console.log(`resolve`)
-        }, 2000 )
-    })
-}
+server.get('/home/cat/:sex', async ( req, res ) => {
+    console.log( 'res: /' )
+})
 
 
-// var outAsyc = async ( ) => {
-//     await innerAync( );
-//     console.log(`outAsyc Done`)
-// }
 
-// var innerAync = async ( ) => {
-//     await innerAwait( );
-//     console.log(`innerAync Done`)
-// }
+// server.use(( req, res ) => {
+//     console.log(`i am global a part`);
+// })
 
-// var innerAwait = ( ) => {
-//     return new Promise(( resolve, reject ) => {
-//         setTimeout(( ) => {
-//             console.log(`innerAwait Done`);
-//             resolve( );
-//         }, 2000)
-//     })
-// }
+// server.get('/', async ( req, res )=>{
+//     var a =  await test( );
+//     console.log('i am / handler');
+//     res.end( );
+// }, [ a, [ b, c ]])
 
-// outAsyc( );
+
+// server.get('/home/cat/:sex/:id', async ( req, res ) => {
+//     console.log( 'res: /' )
+// })
+
+// server.get('/home/cat/:sex', async ( req, res ) => {
+//     console.log( 'res: /' )
+// })
+
+
+
 
