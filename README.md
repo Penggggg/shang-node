@@ -49,13 +49,13 @@ var c = ( req, res ) => {
 
 > My Express —— HTTP/TCP request params parse
 
-server.get('/home/cat/:sex/:id', async ( req, res ) => {
-    console.log( 'hi' )
+server.get('/home/:sex/:id', async ( req, res ) => {
+    console.log( 'handler' )
 })
 
+curl 127.0.0.1:3000/home/man/423 ---> req.path = '/home' req.params = { sex: 'man', id: '423' }
 
-server.get('/home/cat/:sex', async ( req, res ) => {
-    console.log( 'hi' )
-})
+excessive parameters will be ignored
+curl 127.0.0.1:3000/home/man/423/123 ---> req.path = '/home' req.params = { sex: 'man', id: '423' }
 
 #### 

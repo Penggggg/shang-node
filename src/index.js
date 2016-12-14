@@ -11,23 +11,27 @@ const express_1 = require("./my_modules/express");
 var app = express_1.default();
 var server = app.listen({ port: 3000 });
 console.log('creating server...');
-server.get('/home/cat/:sex/:id', (req, res) => __awaiter(this, void 0, void 0, function* () {
-    console.log('res: /');
+server.use((req, res) => {
+    console.log('global fuck');
+});
+let a = () => {
+    console.log(`inner fuck`);
+};
+let b = () => {
+    console.log(`inner fuck`);
+};
+server.get('/home', (req, res) => __awaiter(this, void 0, void 0, function* () {
+    console.log('handler fuc1k');
+}), [[a, b]]);
+server.get('/home/:sex/:id', (req, res) => __awaiter(this, void 0, void 0, function* () {
+    console.log('handler');
 }));
-server.get('/home/cat/:sex', (req, res) => __awaiter(this, void 0, void 0, function* () {
-    console.log('res: /');
+server.get('/home/:sex', (req, res) => __awaiter(this, void 0, void 0, function* () {
+    console.log('handler');
 }));
-// server.use(( req, res ) => {
-//     console.log(`i am global a part`);
-// })
-// server.get('/', async ( req, res )=>{
-//     var a =  await test( );
-//     console.log('i am / handler');
-//     res.end( );
-// }, [ a, [ b, c ]])
-// server.get('/home/cat/:sex/:id', async ( req, res ) => {
-//     console.log( 'res: /' )
-// })
-// server.get('/home/cat/:sex', async ( req, res ) => {
-//     console.log( 'res: /' )
-// })
+server.get('/home/:sex/:id/:name/:asd', (req, res) => __awaiter(this, void 0, void 0, function* () {
+    console.log('1');
+}));
+server.get('/users', () => __awaiter(this, void 0, void 0, function* () {
+    console.log(`users`);
+}));

@@ -1,4 +1,12 @@
 "use strict";
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments)).next());
+    });
+};
 const http = require("http");
 const index_1 = require("./_req/index");
 class _Http {
@@ -19,7 +27,7 @@ class _Http {
         /**
          * 内部中间件，用来改写req, res对象
          */
-        this.spcialMiddlewares = [index_1.setReqParams];
+        this.spcialMiddlewares = [index_1.setReqPathParams, index_1.setReqQuery];
     }
     /**
      * createServer( port, domain )创建一个Http Server
@@ -30,50 +38,61 @@ class _Http {
                 // step 0: 跑一遍内部中间件
                 this.spcialMiddlewares.forEach((middlewareItem, index) => {
                     try {
-                        middlewareItem(req, res);
+                        middlewareItem(req, res)(this.innerMiddlewares);
                     }
                     catch (e) {
                         console.log(`http spcialMiddlewares middlewares Error: middleware - ${index}: ${e}`);
                     }
                 });
-                // if ( typeof this.innerMiddlewares[ req.url ] !== 'undefined ') {              
-                //     // step 1: 跑一遍全局中间件
-                //     this.outterMiddlewares.forEach(( middlewareItem, index ) => {
-                //         try {
-                //             middlewareItem( req, res )
-                //         } catch ( e ) {
-                //             console.log(`http global middlewares Error: middleware - ${index}: ${e}`)
-                //         }
-                //     })
-                //     // step 2: 跑一遍当前path的中间件的 a part 
-                //     this.innerMiddlewares[ req.url ][ req.method ].forEach(( middlewareItem, index ) => {
-                //         try {
-                //             middlewareItem[ 0 ]( req, res )
-                //         } catch ( e ) {
-                //             console.log(`http inner middlewares part A Error: middleware - ${index}: ${e}`)
-                //         }
-                //     })
-                //     let innerAsync = async ( ) => {
-                //         // step 3: 跑一遍当前path的handler
-                //         try { 
-                //             await this.innerMiddlewares[ req.url ].handler( req, res );
-                //         } catch ( e ) { console.log(`http handler Error! ${e}`) }
-                //     }
-                //     let outterAsync = async ( ) => {
-                //         await innerAsync( );
-                //         // step 4: 跑一遍当前path的中间件的 b part
-                //         this.innerMiddlewares[ req.url ][ req.method ].forEach(( middlewareItem, index ) => {
-                //                 try {
-                //                     if ( middlewareItem[ 1 ] !== null ) {middlewareItem[ 1 ]( req, res );}
-                //                 } catch ( e ) {
-                //                     console.log(`http inner middlewares part A Error: middleware - ${index}: ${e}`)
-                //                 }
-                //         }) 
-                //     }
-                //     outterAsync( );
-                // } else {
-                //     console.log ( `无该路由handler` )
-                // }
+                console.log(req.path);
+                console.log(req.params);
+                if (typeof this.innerMiddlewares[req.path] !== 'undefined ') {
+                    // step 1: 跑一遍全局中间件
+                    this.outterMiddlewares.forEach((middlewareItem, index) => {
+                        try {
+                            middlewareItem(req, res);
+                        }
+                        catch (e) {
+                            console.log(`http global middlewares Error: middleware - ${index}: ${e}`);
+                        }
+                    });
+                    // // step 2: 跑一遍当前path的中间件的 a part
+                    this.innerMiddlewares[req.path][req.paramsLen][req.method].forEach((middlewareItem, index) => {
+                        try {
+                            middlewareItem[0](req, res);
+                        }
+                        catch (e) {
+                            console.log(`http inner middlewares part A Error: middleware - ${index}: ${e}`);
+                        }
+                    });
+                    let innerAsync = () => __awaiter(this, void 0, void 0, function* () {
+                        // step 3: 跑一遍当前path的handler
+                        try {
+                            yield this.innerMiddlewares[req.path][String(req.paramsLen)].handler(req, res);
+                        }
+                        catch (e) {
+                            console.log(`http handler Error! ${e}`);
+                        }
+                    });
+                    let outterAsync = () => __awaiter(this, void 0, void 0, function* () {
+                        yield innerAsync();
+                        // step 4: 跑一遍当前path的中间件的 b part
+                        this.innerMiddlewares[req.path][String(req.paramsLen)][req.method].forEach((middlewareItem, index) => {
+                            try {
+                                if (middlewareItem[1] !== null) {
+                                    middlewareItem[1](req, res);
+                                }
+                            }
+                            catch (e) {
+                                console.log(`http inner middlewares part A Error: middleware - ${index}: ${e}`);
+                            }
+                        });
+                    });
+                    outterAsync();
+                }
+                else {
+                    console.log(`无该路由handler`);
+                }
             });
             server.listen(port, domain);
             return server;
@@ -129,6 +148,9 @@ class _Http {
             reqPath = _.reqPath;
             params = _.params;
         }
+        else {
+            reqPath = path;
+        }
         // 把middewares和handler注入到path-GET-paramsLength
         // 防止原对象覆盖
         this.innerMiddlewares[reqPath] = this.innerMiddlewares[reqPath] || {};
@@ -150,7 +172,6 @@ class _Http {
                 _current.GET.push(item);
             });
         }
-        console.log(this.innerMiddlewares[reqPath]);
     }
     /**
      * delete 方法
